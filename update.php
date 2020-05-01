@@ -1,11 +1,11 @@
 <?php 
     include ('db.php');
-    $id = $_GET['id'];
+    $id = (int)$_GET['id'];
     $sql = "SELECT * FROM `tasks`  WHERE id = '$id' ";
     $rows = $db->query($sql);
     $row =  $rows->fetch_assoc(); 
     if (isset($_POST['send'])) {
-        $task = $_POST['task'];
+        $task = htmlspecialchars($_POST['task']);
         $update = "UPDATE `tasks`  SET NAME ='$task' ";
         $db->query($update);
         header('location:index.php');
@@ -34,6 +34,7 @@
                  
             </div>
                 <input type="submit" class="btn btn-success" name="send" value="Update Task"  id="" required>
+                &nbsp <a href="index.php" class="btn btn-warning">Back</a>
          </form>
        
 

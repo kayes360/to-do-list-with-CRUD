@@ -1,25 +1,14 @@
 <?php 
     include ('db.php');
-
-    $page = (isset($_GET['page']) ? (int)$_GET['page']:1);
-
-    $perpage = (isset($_GET['per-page']) && (int)($_GET['per-page']) <= 50 ? (int)$_GET['per-page'] : 5 );
-
-    $start = ($page >1 ) ?($page *$perpage) - $perpage :0;
-
-    $sql = "SELECT * FROM `tasks` LIMIT ".$start." , ".$perpage." ";
-
+ 
+    if (isset($_POST['search'])) {
     
-    $total_record = $db->query("SELECT * FROM `tasks`")->num_rows;
-    $total_pages = ceil($total_record / $perpage);
-    $rows = $db->query($sql);
+    $name = htmlspecialchars($_POST['search']);   
 
-   /* echo "page = ".$page."<br>";
-    echo "perpage = ".$perpage."<br>";
-    echo "start = ".$start."<br>";
-    
-    echo"total_record = ".$total_record."<br>"; 
-    echo"total_pages = ".$total_pages."<br>"; */
+    $sql = "SELECT * FROM `tasks` WHERE name  LIKE '%$name%' ";  
+
+    $rows = $db->query($sql);   
+    } 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,7 +59,14 @@
                 <input type="text" placeholder="Search" name="search" class="form-control">
               </form>
             </div>
- 
+
+<?php if (mysqli_num_rows($rows) < 1 ): ?>
+
+    <h2 class="text-danger text-center">Nothing Found</h2>
+    <a href="index.php" class="btn btn-warning">Back</a>
+
+<?php else: ?>
+
                 <table class="table table-hover">
                 <thead>
                     <tr>
@@ -90,28 +86,10 @@
                         <?php endwhile; ?>
                     
                 </tbody>
+
                 </table>
-                 <center class="align-items-center">
-                   
-  <ul class="pagination justify-content-center">
-    
-  
-    <li class="page-item disabled">
-      <a class="page-link" href="#" tabindex="-1">Previous</a>
-    </li>
-    <?php for($i=1; $i<=$total_pages; $i++): ?>
-    <li class="page-item">
-      <a class="page-link" href="?page=<?php echo $i;?>&per-page=<?php echo $perpage;?>"><?php echo $i; ?></a>
-    </li> 
-    
-    <?php endfor; ?>
-    <li class="page-item">
-      <a class="page-link" href="#">Next</a>
-    </li>
-    
-  </ul>
-</nav>
-                 </center>
+                 
+                <?php endif ; ?>
             </div>
         </div>
     </div> 
